@@ -21,7 +21,7 @@ nslookup 1178.154.247.12 2>/dev/null || echo "DNS lookup failed"]]></param>
       </runner>
       <runner id="Maven2_1" name="" type="Maven2">
         <conditions>
-          <contains name="teamcity.build.branch" value="master" />
+          <equals name="teamcity.build.branch" value="refs/heads/master" />
         </conditions>
         <parameters>
           <param name="goals" value="deploy" />
