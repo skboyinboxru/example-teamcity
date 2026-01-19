@@ -67,24 +67,19 @@ ls -la /usr/bin/mvn /opt/maven /usr/share/maven 2>/dev/null || echo "No Maven di
           <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
-      <runner id="simpleRunner" name="" type="simpleRunner">
+      <runner id="simpleRunner" name="" type="Maven2">
         <parameters>
-          <param name="script.content"><![CDATA[echo "=== DIAGNOSE SHADE PLUGIN ==="
-cd /opt/buildagent/work/b81b86abbf6d1872
-
-# 1. Проверяем, работает ли shade plugin
-mvn help:describe -Dplugin=shade -Ddetail -s settings.xml
-
-echo ""
-echo "=== TRY SIMPLE PACKAGE ==="
-# 2. Пробуем собрать с детальными логами
-mvn clean package -s settings.xml -X 2>&1 | grep -A10 -B10 "shade\|error\|fail\|Building jar"
-
-echo ""
-echo "=== CHECK JAVA VERSION ==="
-java -version]]></param>
+          <param name="goals" value="package" />
+          <param name="localRepoScope" value="agent" />
+          <param name="maven.path" value="%teamcity.tool.maven.DEFAULT%" />
+          <param name="pomLocation" value="pom.xml" />
+          <param name="teamcity.coverage.emma.include.source" value="true" />
+          <param name="teamcity.coverage.emma.instr.parameters" value="-ix -*Test*" />
+          <param name="teamcity.coverage.idea.includePatterns" value="*" />
+          <param name="teamcity.coverage.jacoco.patterns" value="+:*" />
           <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
+          <param name="teamcity.tool.jacoco" value="%teamcity.tool.jacoco.DEFAULT%" />
+          <param name="userSettingsSelection" value="userSettingsSelection:default" />
         </parameters>
       </runner>
       <runner id="check_build_results" name="" type="simpleRunner">
