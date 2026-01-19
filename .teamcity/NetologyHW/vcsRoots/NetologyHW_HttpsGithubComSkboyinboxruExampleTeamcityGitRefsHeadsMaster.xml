@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vcs-root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ea1b0266-1c97-4db2-a443-91b8daa1eab8" type="jetbrains.git" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>https://github.com/skboyinboxru/example-teamcity.git</name>
+  <param name="agentCleanFilesPolicy" value="ALL_UNTRACKED" />
+  <param name="agentCleanPolicy" value="ON_BRANCH_CHANGE" />
+  <param name="authMethod" value="PASSWORD" />
+  <param name="branch" value="refs/heads/master" />
+  <param name="ignoreKnownHosts" value="true" />
+  <param name="secure:password" value="credentialsJSON:ed90dbd2-0726-4fd8-8776-bfaf0dc4b983" />
+  <param name="submoduleCheckout" value="CHECKOUT" />
+  <param name="teamcity:branchSpec" value="+:refs/heads/*" />
+  <param name="url" value="https://github.com/skboyinboxru/example-teamcity.git" />
+  <param name="useAlternates" value="AUTO" />
+  <param name="username" value="skboyinboxru" />
+  <param name="usernameStyle" value="USERID" />
+</vcs-root>
+

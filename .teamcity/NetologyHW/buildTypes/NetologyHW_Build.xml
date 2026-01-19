@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="e16f7bb4-d263-499c-8003-74fd68c6a013" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2025.3/project-config.xsd">
+  <name>Build</name>
+  <description />
+  <settings>
+    <build-runners>
+      <runner id="simpleRunner_2" name="" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[echo "=== CHECK NEXUS CONNECTIVITY ==="
+echo "Testing Nexus IP: 1178.154.247.12"
+ping -c 3 1178.154.247.12 2>/dev/null || echo "Ping failed"
+echo ""
+echo "Testing Nexus URL:"
+curl -I http://1178.154.247.12:8081 2>/dev/null | head -1 || echo "Curl failed"
+echo ""
+echo "DNS resolution:"
+nslookup 1178.154.247.12 2>/dev/null || echo "DNS lookup failed"]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="Maven2_1" name="" type="Maven2">
+        <conditions>
+          <contains name="teamcity.build.branch" value="master" />
+        </conditions>
+        <parameters>
+          <param name="goals" value="deploy" />
+          <param name="localRepoScope" value="agent" />
+          <param name="maven.path" value="%teamcity.tool.maven.DEFAULT%" />
+          <param name="pomLocation" value="pom.xml" />
+          <param name="runnerArgs" value="-s settings.xml" />
+          <param name="teamcity.build.workingDir" value="Working directory: %teamcity.build.checkoutDir%" />
+          <param name="teamcity.coverage.emma.include.source" value="true" />
+          <param name="teamcity.coverage.emma.instr.parameters" value="-ix -*Test*" />
+          <param name="teamcity.coverage.idea.includePatterns" value="*" />
+          <param name="teamcity.coverage.jacoco.patterns" value="+:*" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="teamcity.tool.jacoco" value="%teamcity.tool.jacoco.DEFAULT%" />
+          <param name="userSettingsSelection" value="settings.xml" />
+        </parameters>
+      </runner>
+      <runner id="Maven2" name="" type="Maven2">
+        <conditions>
+          <does-not-contain name="teamcity.build.branch" value="master" />
+        </conditions>
+        <parameters>
+          <param name="goals" value="clean test" />
+          <param name="localRepoScope" value="agent" />
+          <param name="maven.path" value="%teamcity.tool.maven.DEFAULT%" />
+          <param name="pomLocation" value="pom.xml" />
+          <param name="runnerArgs" value="-s settings.xml" />
+          <param name="teamcity.build.workingDir" value="Working directory: %teamcity.build.checkoutDir%" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="userSettingsSelection" value="settings.xml" />
+        </parameters>
+      </runner>
+      <runner id="simpleRunner_1" name="" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[echo "=== CHECK MAVEN AVAILABILITY ==="
+which mvn || echo "Maven not found in PATH"
+mvn --version 2>/dev/null || echo "Maven command failed"
+ls -la /usr/bin/mvn /opt/maven /usr/share/maven 2>/dev/null || echo "No Maven directories found"]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="simpleRunner" name="" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[echo "=== DIAGNOSE SHADE PLUGIN ==="
+cd /opt/buildagent/work/b81b86abbf6d1872
+
+# 1. Проверяем, работает ли shade plugin
+mvn help:describe -Dplugin=shade -Ddetail -s settings.xml
+
+echo ""
+echo "=== TRY SIMPLE PACKAGE ==="
+# 2. Пробуем собрать с детальными логами
+mvn clean package -s settings.xml -X 2>&1 | grep -A10 -B10 "shade\|error\|fail\|Building jar"
+
+echo ""
+echo "=== CHECK JAVA VERSION ==="
+java -version]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+      <runner id="check_build_results" name="" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[echo "=== CURRENT DIRECTORY ==="
+pwd
+echo ""
+
+echo "=== CHECKOUT DIR ==="
+echo "%teamcity.build.checkoutDir%"
+echo ""
+
+echo "=== LIST FILES ==="
+ls -la
+echo ""
+
+echo "=== CHECK POM AND SETTINGS ==="
+test -f pom.xml && echo "✅ pom.xml exists" || echo "❌ pom.xml NOT FOUND"
+test -f settings.xml && echo "✅ settings.xml exists" || echo "❌ settings.xml NOT FOUND"
+echo ""
+
+echo "=== CHECK TARGET DIRECTORY ==="
+if [ -d "target" ]; then
+  echo "✅ target directory exists"
+  ls -la target/
+  echo ""
+  echo "JAR files in target:"
+  find target -name "*.jar" -type f
+else
+  echo "❌ target directory NOT FOUND"
+echo "=== MAVEN PACKAGING ==="
+mvn help:effective-pom -s settings.xml | grep -A2 -B2 "<packaging>"
+mvn help:effective-pom -s settings.xml | grep -A2 -B2 "<plugin>"
+
+fi]]></param>
+          <param name="teamcity.build.workingDir" value="%teamcity.build.checkoutDir%" />
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
+        </parameters>
+      </runner>
+    </build-runners>
+    <vcs-settings>
+      <vcs-entry-ref root-id="NetologyHW_HttpsGithubComSkboyinboxruExampleTeamcityGitRefsHeadsMaster" />
+    </vcs-settings>
+    <build-extensions>
+      <extension id="perfmon" type="perfmon" />
+    </build-extensions>
+  </settings>
+</build-type>
+
