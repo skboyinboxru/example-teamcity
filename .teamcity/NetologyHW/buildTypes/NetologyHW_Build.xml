@@ -57,16 +57,6 @@ nslookup 1178.154.247.12 2>/dev/null || echo "DNS lookup failed"]]></param>
           <param name="userSettingsSelection" value="settings.xml" />
         </parameters>
       </runner>
-      <runner id="simpleRunner_1" name="" type="simpleRunner">
-        <parameters>
-          <param name="script.content"><![CDATA[echo "=== CHECK MAVEN AVAILABILITY ==="
-which mvn || echo "Maven not found in PATH"
-mvn --version 2>/dev/null || echo "Maven command failed"
-ls -la /usr/bin/mvn /opt/maven /usr/share/maven 2>/dev/null || echo "No Maven directories found"]]></param>
-          <param name="teamcity.step.mode" value="default" />
-          <param name="use.custom.script" value="true" />
-        </parameters>
-      </runner>
       <runner id="simpleRunner" name="" type="Maven2">
         <parameters>
           <param name="goals" value="package" />
@@ -80,6 +70,16 @@ ls -la /usr/bin/mvn /opt/maven /usr/share/maven 2>/dev/null || echo "No Maven di
           <param name="teamcity.step.mode" value="default" />
           <param name="teamcity.tool.jacoco" value="%teamcity.tool.jacoco.DEFAULT%" />
           <param name="userSettingsSelection" value="userSettingsSelection:default" />
+        </parameters>
+      </runner>
+      <runner id="simpleRunner_1" name="" type="simpleRunner">
+        <parameters>
+          <param name="script.content"><![CDATA[echo "=== CHECK MAVEN AVAILABILITY ==="
+which mvn || echo "Maven not found in PATH"
+mvn --version 2>/dev/null || echo "Maven command failed"
+ls -la /usr/bin/mvn /opt/maven /usr/share/maven 2>/dev/null || echo "No Maven directories found"]]></param>
+          <param name="teamcity.step.mode" value="default" />
+          <param name="use.custom.script" value="true" />
         </parameters>
       </runner>
       <runner id="check_build_results" name="" type="simpleRunner">
